@@ -1,0 +1,90 @@
+const express = require('express');
+const logger = require('../utils/logger');
+
+function createSyncRouter(syncEngine, authClient) {
+  const router = express.Router();
+
+  // middleware to check auth
+  const requireAuth = (req, res, next) => {
+    if (!authClient.isAuthenticated()) {
+      return res.status(401).json({ error: 'Not authenticated. Please login first.' });
+    }
+    next();
+  };
+
+  router.use(requireAuth);
+
+  router.post('/full', async (req, res) => {
+    try {
+      const result = await syncEngine.startFullSync();
+      res.json({
+        message: 'Full sync started',
+        ...result
+      });
+    } catch (err) {
+      logger.error('Failed to start full sync', { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/incremental', async (req, res) => {
+    try {
+      const result = await syncEngine.startIncrementalSync();
+      res.json({
+        message: 'Incremental sync started',
+        ...result
+      });
+    } catch (err) {
+      logger.error('Failed to start incremental sync', { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/:syncId/resume', async (req, res) => {
+    try {
+      const result = await syncEngine.resumeSync(req.params.syncId);
+      res.json({
+        message: 'Sync resumed',
+        ...result
+      });
+    } catch (err) {
+      logger.error('Failed to resume sync', { error: err.message });
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.post('/:syncId/pause', (req, res) => {
+    try {
+      syncEngine.pauseSync(req.params.syncId);
+      res.json({ message: 'Sync paused' });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.get('/current', (req, res) => {
+    const status = syncEngine.getCurrentSync();
+    if (!status) {
+      return res.json({ message: 'No active sync' });
+    }
+    res.json(status);
+  });
+
+  router.get('/:syncId/status', (req, res) => {
+    const status = syncEngine.getStatus(req.params.syncId);
+    if (!status) {
+      return res.status(404).json({ error: 'Sync not found' });
+    }
+    res.json(status);
+  });
+
+  router.get('/history', (req, res) => {
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const history = syncEngine.getSyncHistory(limit);
+    res.json(history);
+  });
+
+  return router;
+}
+
+module.exports = createSyncRouter;
