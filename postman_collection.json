@@ -1,0 +1,504 @@
+{
+  "info": {
+    "name": "GDrive Sync Service API",
+    "description": "API collection for testing Google Drive Sync Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check application health, auth status, and job runner stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (OAuth Start)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Redirects to Google OAuth consent screen. Open in browser."
+          }
+        },
+        {
+          "name": "Auth Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "status"]
+            },
+            "description": "Check if user is authenticated"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Revoke access and clear credentials"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "Start Full Sync",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/full",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "full"]
+            },
+            "description": "Start a full sync of all Google Drive files"
+          }
+        },
+        {
+          "name": "Start Incremental Sync",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/incremental",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "incremental"]
+            },
+            "description": "Start incremental sync (only changes since last sync)"
+          }
+        },
+        {
+          "name": "Get Current Sync",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "current"]
+            },
+            "description": "Get status of currently running sync"
+          }
+        },
+        {
+          "name": "Get Sync History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/history?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Number of history entries to return"
+                }
+              ]
+            },
+            "description": "Get sync history"
+          }
+        },
+        {
+          "name": "Get Sync Status by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/:syncId/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", ":syncId", "status"],
+              "variable": [
+                {
+                  "key": "syncId",
+                  "value": "sync_abc123",
+                  "description": "Sync ID from startFullSync or startIncrementalSync"
+                }
+              ]
+            },
+            "description": "Get status of a specific sync by ID"
+          }
+        },
+        {
+          "name": "Pause Sync",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/:syncId/pause",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", ":syncId", "pause"],
+              "variable": [
+                {
+                  "key": "syncId",
+                  "value": "sync_abc123",
+                  "description": "Sync ID to pause"
+                }
+              ]
+            },
+            "description": "Pause an in-progress sync"
+          }
+        },
+        {
+          "name": "Resume Sync",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sync/:syncId/resume",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", ":syncId", "resume"],
+              "variable": [
+                {
+                  "key": "syncId",
+                  "value": "sync_abc123",
+                  "description": "Sync ID to resume"
+                }
+              ]
+            },
+            "description": "Resume a paused sync"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "List Files",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/files?limit=100&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["files"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "Number of files to return (default: 100)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Offset for pagination (default: 0)"
+                }
+              ]
+            },
+            "description": "List synced files with pagination"
+          }
+        },
+        {
+          "name": "Get File Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/files/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["files", "count"]
+            },
+            "description": "Get total count of synced files"
+          }
+        },
+        {
+          "name": "Get File by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/files/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["files", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "file_id_here",
+                  "description": "Google Drive file ID"
+                }
+              ]
+            },
+            "description": "Get a specific file by its ID"
+          }
+        },
+        {
+          "name": "Get File Children",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/files/:id/children",
+              "host": ["{{baseUrl}}"],
+              "path": ["files", ":id", "children"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "folder_id_here",
+                  "description": "Folder ID to get children of"
+                }
+              ]
+            },
+            "description": "Get children files of a folder"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Get Job Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "stats"]
+            },
+            "description": "Get job runner statistics"
+          }
+        },
+        {
+          "name": "Get Active Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "active"]
+            },
+            "description": "Get currently running jobs"
+          }
+        },
+        {
+          "name": "Get Pending Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/pending?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "pending"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of jobs to return"
+                }
+              ]
+            },
+            "description": "Get pending jobs in queue"
+          }
+        },
+        {
+          "name": "Get Completed Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/completed?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "completed"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of jobs to return"
+                }
+              ]
+            },
+            "description": "Get completed jobs"
+          }
+        },
+        {
+          "name": "Get Failed Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/failed?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "failed"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of jobs to return"
+                }
+              ]
+            },
+            "description": "Get failed jobs"
+          }
+        },
+        {
+          "name": "Get Dead Letter Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/dead-letter?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "dead-letter"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of jobs to return"
+                }
+              ]
+            },
+            "description": "Get jobs in dead letter queue (exceeded max retries)"
+          }
+        },
+        {
+          "name": "Get Job by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Job ID"
+                }
+              ]
+            },
+            "description": "Get a specific job by ID"
+          }
+        },
+        {
+          "name": "Retry Job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/:id/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", ":id", "retry"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Job ID to retry"
+                }
+              ]
+            },
+            "description": "Retry a failed job"
+          }
+        },
+        {
+          "name": "Retry Dead Letter Job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/dead-letter/:id/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "dead-letter", ":id", "retry"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Dead letter job ID to retry"
+                }
+              ]
+            },
+            "description": "Retry a job from dead letter queue"
+          }
+        },
+        {
+          "name": "Pause Job Runner",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/runner/pause",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "runner", "pause"]
+            },
+            "description": "Pause the job runner (stops processing new jobs)"
+          }
+        },
+        {
+          "name": "Resume Job Runner",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/runner/resume",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "runner", "resume"]
+            },
+            "description": "Resume the job runner"
+          }
+        },
+        {
+          "name": "Set Concurrency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concurrency\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/runner/concurrency",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "runner", "concurrency"]
+            },
+            "description": "Set job runner concurrency (number of parallel jobs)"
+          }
+        }
+      ]
+    }
+  ]
+}
