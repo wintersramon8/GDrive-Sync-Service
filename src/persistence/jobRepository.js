@@ -178,6 +178,20 @@ class JobRepository {
     return stats;
   }
 
+  deleteAll() {
+    const jobCountResult = this.dbManager.queryOne('SELECT COUNT(*) as count FROM jobs', []);
+    const jobCount = jobCountResult ? jobCountResult.count : 0;
+
+    const deadCountResult = this.dbManager.queryOne('SELECT COUNT(*) as count FROM dead_letter_queue', []);
+    const deadCount = deadCountResult ? deadCountResult.count : 0;
+
+    this.dbManager.run('DELETE FROM dead_letter_queue', []);
+    this.dbManager.run('DELETE FROM jobs', []);
+
+    logger.info('All jobs and dead letter queue cleared', { jobCount, deadCount });
+    return { jobCount, deadCount };
+  }
+
   _mapRow(row) {
     return {
       id: row.id,

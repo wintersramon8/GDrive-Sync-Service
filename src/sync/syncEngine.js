@@ -169,6 +169,40 @@ class SyncEngine extends EventEmitter {
   setChangeToken(token) {
     this.lastChangeToken = token;
   }
+
+  deleteAllFiles() {
+    const count = this.fileRepo.deleteAll();
+    logger.info('All files deleted', { count });
+    this.emit('files:deleted', { count });
+    return count;
+  }
+
+  resetAll() {
+    const filesDeleted = this.fileRepo.deleteAll();
+    const checkpointsDeleted = this.checkpointRepo.deleteAll();
+    const jobsDeleted = this.jobRepo.deleteAll();
+
+    this.currentSyncId = null;
+    this.lastChangeToken = null;
+
+    logger.info('Full reset completed', {
+      filesDeleted,
+      checkpointsDeleted,
+      ...jobsDeleted
+    });
+
+    this.emit('reset', {
+      filesDeleted,
+      checkpointsDeleted,
+      ...jobsDeleted
+    });
+
+    return {
+      filesDeleted,
+      checkpointsDeleted,
+      ...jobsDeleted
+    };
+  }
 }
 
 module.exports = SyncEngine;

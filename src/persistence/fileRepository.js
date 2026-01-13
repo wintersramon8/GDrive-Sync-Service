@@ -84,6 +84,13 @@ class FileRepository {
     return before - after;
   }
 
+  deleteAll() {
+    const count = this.count();
+    this.dbManager.run('DELETE FROM files', []);
+    logger.info(`Deleted all files`, { count });
+    return count;
+  }
+
   _mapRow(row) {
     return {
       id: row.id,

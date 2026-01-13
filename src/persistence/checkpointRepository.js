@@ -101,6 +101,14 @@ class CheckpointRepository {
     return true;
   }
 
+  deleteAll() {
+    const countResult = this.dbManager.queryOne('SELECT COUNT(*) as count FROM sync_checkpoints', []);
+    const count = countResult ? countResult.count : 0;
+    this.dbManager.run('DELETE FROM sync_checkpoints', []);
+    logger.info('All checkpoints deleted', { count });
+    return count;
+  }
+
   getHistory(limit = 20) {
     const rows = this.dbManager.query(`
       SELECT * FROM sync_checkpoints ORDER BY id DESC LIMIT ?

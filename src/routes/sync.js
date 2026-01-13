@@ -12,6 +12,21 @@ function createSyncRouter(syncEngine, authClient) {
     next();
   };
 
+  // Reset endpoint - no auth required for demo purposes
+  router.post('/reset', (req, res) => {
+    try {
+      const result = syncEngine.resetAll();
+      logger.info('Full reset completed via API', result);
+      res.json({
+        message: 'Database reset complete',
+        deleted: result
+      });
+    } catch (err) {
+      logger.error('Failed to reset', { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   router.use(requireAuth);
 
   router.post('/full', async (req, res) => {
@@ -82,6 +97,17 @@ function createSyncRouter(syncEngine, authClient) {
     const limit = parseInt(req.query.limit, 10) || 20;
     const history = syncEngine.getSyncHistory(limit);
     res.json(history);
+  });
+
+  router.delete('/files', (req, res) => {
+    try {
+      const count = syncEngine.deleteAllFiles();
+      logger.info('All files deleted via API', { count });
+      res.json({ message: 'All files deleted', count });
+    } catch (err) {
+      logger.error('Failed to delete files', { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
   });
 
   router.delete('/:syncId', (req, res) => {
