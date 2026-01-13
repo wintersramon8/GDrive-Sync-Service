@@ -84,6 +84,16 @@ function createSyncRouter(syncEngine, authClient) {
     res.json(history);
   });
 
+  router.delete('/:syncId', (req, res) => {
+    try {
+      syncEngine.deleteSync(req.params.syncId);
+      res.json({ message: 'Sync deleted successfully' });
+    } catch (err) {
+      logger.error('Failed to delete sync', { error: err.message, syncId: req.params.syncId });
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   return router;
 }
 

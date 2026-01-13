@@ -126,6 +126,7 @@ npm start
 | `/sync/:syncId/status` | GET | Get sync status by ID |
 | `/sync/:syncId/pause` | POST | Pause a running sync |
 | `/sync/:syncId/resume` | POST | Resume a paused sync |
+| `/sync/:syncId` | DELETE | Delete a sync record (must not be in progress) |
 | `/sync/history` | GET | List past sync operations (`?limit=N`) |
 
 ### Job Management
@@ -287,7 +288,16 @@ curl -X POST http://localhost:3000/sync/{syncId}/pause
 curl -X POST http://localhost:3000/sync/{syncId}/resume
 ```
 
-#### 7. View Synced Files
+#### 7. Delete a Sync
+
+Delete a sync record from the database (sync must not be in progress):
+```bash
+curl -X DELETE http://localhost:3000/sync/{syncId}
+```
+
+Note: You cannot delete a sync that is currently in progress. Pause it first if needed.
+
+#### 8. View Synced Files
 
 List all synced files (paginated):
 ```bash
@@ -309,7 +319,7 @@ Get children of a folder:
 curl http://localhost:3000/files/{folderId}/children
 ```
 
-#### 8. Monitor Jobs
+#### 9. Monitor Jobs
 
 Get job statistics:
 ```bash
@@ -330,7 +340,7 @@ Get a specific job:
 curl http://localhost:3000/jobs/{jobId}
 ```
 
-#### 9. Retry Failed Jobs
+#### 10. Retry Failed Jobs
 
 Retry a failed job:
 ```bash
@@ -342,7 +352,7 @@ Retry a dead-letter job:
 curl -X POST http://localhost:3000/jobs/dead-letter/{jobId}/retry
 ```
 
-#### 10. Control Job Runner
+#### 11. Control Job Runner
 
 ```bash
 # Pause job processing
@@ -357,7 +367,7 @@ curl -X POST http://localhost:3000/jobs/runner/concurrency \
   -d '{"concurrency": 3}'
 ```
 
-#### 11. Logout
+#### 12. Logout
 
 ```bash
 curl -X POST http://localhost:3000/auth/logout

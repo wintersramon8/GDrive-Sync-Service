@@ -136,6 +136,28 @@ class SyncEngine extends EventEmitter {
     return this.checkpointRepo.getHistory(limit);
   }
 
+  deleteSync(syncId) {
+    const checkpoint = this.checkpointRepo.findBySyncId(syncId);
+    if (!checkpoint) {
+      throw new Error(`Sync not found: ${syncId}`);
+    }
+
+    if (checkpoint.status === CHECKPOINT_STATUS.IN_PROGRESS) {
+      throw new Error(`Cannot delete sync ${syncId} while it is in progress. Pause it first.`);
+    }
+
+    const deleted = this.checkpointRepo.delete(syncId);
+    if (deleted) {
+      logger.info('Sync deleted', { syncId });
+      this.emit('sync:deleted', { syncId });
+
+      if (this.currentSyncId === syncId) {
+        this.currentSyncId = null;
+      }
+    }
+    return deleted;
+  }
+
   getFileCount() {
     return this.fileRepo.count();
   }

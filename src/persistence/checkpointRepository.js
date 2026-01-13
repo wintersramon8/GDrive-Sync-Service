@@ -89,6 +89,18 @@ class CheckpointRepository {
     return 1;
   }
 
+  delete(syncId) {
+    const checkpoint = this.findBySyncId(syncId);
+    if (!checkpoint) {
+      return false;
+    }
+    this.dbManager.run(`
+      DELETE FROM sync_checkpoints WHERE sync_id = ?
+    `, [syncId]);
+    logger.debug('Checkpoint deleted', { syncId });
+    return true;
+  }
+
   getHistory(limit = 20) {
     const rows = this.dbManager.query(`
       SELECT * FROM sync_checkpoints ORDER BY id DESC LIMIT ?

@@ -9,7 +9,18 @@
     "test": "jest --coverage",
     "test:unit": "jest --testPathPattern=tests/unit",
     "test:integration": "jest --testPathPattern=tests/integration",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "demo": "node demo-failure-recovery.js all",
+    "demo:crash": "node demo-failure-recovery.js crash",
+    "demo:retry": "node demo-failure-recovery.js job-retry",
+    "demo:deadletter": "node demo-failure-recovery.js dead-letter",
+    "demo:pause": "node demo-failure-recovery.js pause-resume",
+    "demo:idempotency": "node demo-failure-recovery.js idempotency",
+    "demo:inject-failed": "node demo-inject-failure.js create-failed-job",
+    "demo:inject-dead": "node demo-inject-failure.js create-dead-job",
+    "demo:inject-crash": "node demo-inject-failure.js interrupt-sync",
+    "demo:state": "node demo-inject-failure.js show-state",
+    "demo:reset": "node demo-inject-failure.js reset"
   },
   "keywords": [
     "google-drive",
