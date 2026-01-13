@@ -128,6 +128,8 @@ npm start
 | `/sync/:syncId/resume` | POST | Resume a paused sync |
 | `/sync/:syncId` | DELETE | Delete a sync record (must not be in progress) |
 | `/sync/history` | GET | List past sync operations (`?limit=N`) |
+| `/sync/files` | DELETE | Delete all synced files |
+| `/sync/reset` | POST | Reset database (clears files, jobs, checkpoints) |
 
 ### Job Management
 
@@ -151,8 +153,10 @@ npm start
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/files` | GET | List synced files (`?limit=N&offset=N`) |
+| `/files` | DELETE | Delete all synced files |
 | `/files/count` | GET | Total file count |
 | `/files/:id` | GET | Get file details by Google Drive ID |
+| `/files/:id` | DELETE | Delete a specific file by ID |
 | `/files/:id/children` | GET | List children of a folder |
 
 ## Reliability Strategy
@@ -319,7 +323,19 @@ Get children of a folder:
 curl http://localhost:3000/files/{folderId}/children
 ```
 
-#### 9. Monitor Jobs
+#### 9. Delete Files
+
+Delete a specific file:
+```bash
+curl -X DELETE http://localhost:3000/files/{fileId}
+```
+
+Delete all files:
+```bash
+curl -X DELETE http://localhost:3000/files
+```
+
+#### 10. Monitor Jobs
 
 Get job statistics:
 ```bash
@@ -340,7 +356,7 @@ Get a specific job:
 curl http://localhost:3000/jobs/{jobId}
 ```
 
-#### 10. Retry Failed Jobs
+#### 11. Retry Failed Jobs
 
 Retry a failed job:
 ```bash
@@ -352,7 +368,7 @@ Retry a dead-letter job:
 curl -X POST http://localhost:3000/jobs/dead-letter/{jobId}/retry
 ```
 
-#### 11. Control Job Runner
+#### 12. Control Job Runner
 
 ```bash
 # Pause job processing
@@ -367,7 +383,19 @@ curl -X POST http://localhost:3000/jobs/runner/concurrency \
   -d '{"concurrency": 3}'
 ```
 
-#### 12. Logout
+#### 13. Reset Database
+
+Reset the entire database (clears all files, jobs, checkpoints, and dead letter queue):
+```bash
+curl -X POST http://localhost:3000/sync/reset
+```
+
+This is useful for demo purposes or starting fresh. You can also use the npm script:
+```bash
+npm run demo:reset
+```
+
+#### 14. Logout
 
 ```bash
 curl -X POST http://localhost:3000/auth/logout

@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 
 function createFilesRouter(fileRepository) {
   const router = express.Router();
@@ -37,6 +38,32 @@ function createFilesRouter(fileRepository) {
   router.get('/:id/children', (req, res) => {
     const children = fileRepository.findByParentId(req.params.id);
     res.json(children);
+  });
+
+  router.delete('/', (req, res) => {
+    try {
+      const count = fileRepository.deleteAll();
+      logger.info('All files deleted via API', { count });
+      res.json({ message: 'All files deleted', count });
+    } catch (err) {
+      logger.error('Failed to delete all files', { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.delete('/:id', (req, res) => {
+    try {
+      const file = fileRepository.findById(req.params.id);
+      if (!file) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+      const deleted = fileRepository.deleteById(req.params.id);
+      logger.info('File deleted', { id: req.params.id, deleted });
+      res.json({ message: 'File deleted', id: req.params.id });
+    } catch (err) {
+      logger.error('Failed to delete file', { error: err.message, id: req.params.id });
+      res.status(500).json({ error: err.message });
+    }
   });
 
   return router;
